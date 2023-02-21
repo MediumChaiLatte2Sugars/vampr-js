@@ -40,20 +40,72 @@ class Vampire {
     const otherVampireSeniorityRank = vampire.numberOfVampiresFromOriginal;
 
     // Check for original vampire
-    if (this.creator === null){
+    if (this.creator === null) {
       return true;
     }
 
     // Check if other vampire is original
-    if (vampire.creator === null){
+    if (vampire.creator === null) {
       return false;
     }
 
-    if (!(currentVampireSeniorityRank < otherVampireSeniorityRank)){
+    if (!(currentVampireSeniorityRank < otherVampireSeniorityRank)) {
       return false;
     }
 
     return true;
+
+  }
+
+  // Returns the vampire object with that name, or null if no vampire exists with that name
+  vampireWithName(name) {
+
+    let foundVampire = null;
+
+    if (this.name === name) {
+      return this;
+    }
+
+    for (let offspring of this.offspring) {
+      foundVampire = offspring.vampireWithName(name);
+    }
+
+    return foundVampire;
+
+  }
+
+  // Returns the total number of vampires that exist
+  get totalDescendents() {
+
+    let total = 0;
+
+    if (this.offspring.length){
+      total += this.offspring.length;
+    }
+
+    for (let offspring of this.offspring){
+      total += offspring.totalDescendents;
+    }
+
+    return total;
+
+  }
+
+  // Returns an array of all the vampires that were converted after 1980
+  get allMillennialVampires() {
+
+    let totalVampires = [];
+
+    if (this.yearConverted > 1980){
+      totalVampires.push(this);
+    }
+
+    for (let descendant of this.offspring){
+      const millenialVampires = descendant.allMillennialVampires;
+      totalVampires = [...totalVampires, ...millenialVampires];
+    }
+
+    return totalVampires;
 
   }
 
@@ -65,23 +117,23 @@ class Vampire {
   // * when comparing Ansel and Sarah, Ansel is the closest common anscestor.
   // * when comparing Ansel and Andrew, Ansel is the closest common anscestor.
   closestCommonAncestor(vampire) {
-    // Orginal vamp check (current vamp)
-    if (this.creator === null){
+    // Orginal vampire check (current vampire)
+    if (this.creator === null) {
       return this;
     }
 
-    // Original vamp check (other vamp)
-    if (vampire.creator === null){
+    // Original vampire check (other vampire)
+    if (vampire.creator === null) {
       return vampire;
     }
-    
-    // Same vamp
-    if (this === vampire){
+
+    // Same vampire
+    if (this === vampire) {
       return this;
     }
 
-     // Sibling check
-     if (this.creator.offspring.includes(vampire)){
+    // Sibling check
+    if (this.creator.offspring.includes(vampire)) {
       return this.creator;
     }
 
@@ -90,8 +142,8 @@ class Vampire {
     let otherVampireAncestors = vampire.ancestors();
 
     // Check containment in ancestors
-    for (let ancestor of currentVampireAncestors){
-      if (otherVampireAncestors.includes(ancestor)){
+    for (let ancestor of currentVampireAncestors) {
+      if (otherVampireAncestors.includes(ancestor)) {
         return ancestor;
       }
     }
@@ -99,6 +151,7 @@ class Vampire {
 
   }
 
+  // returns an array of all of the vampire's ancestors
   ancestors() {
     let vampireAncestors = [];
     let currentVampire = this;
@@ -109,7 +162,7 @@ class Vampire {
       currentVampire = currentVampire.creator;
     }
 
-    if (!currentVampire.creator){
+    if (!currentVampire.creator) {
       vampireAncestors.push(currentVampire);
     }
 
